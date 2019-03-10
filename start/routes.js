@@ -1,12 +1,14 @@
-"use strict";
+'use strict'
 
-const Route = use("Route");
+const Route = use('Route')
 
-Route.post("/users", "UserController.store");
-Route.post("/authenticate", "AuthController.authenticate");
+Route.post('/users', 'UserController.store')
+Route.post('/authenticate', 'AuthController.authenticate')
 
 Route.group(() => {
-  Route.resource("users", "UserController")
+  Route.resource('users', 'UserController')
     .apiOnly()
-    .except("store");
-}).middleware(["auth"]);
+    .except('store')
+
+  Route.resource('states', 'StateController').only(['index', 'show'])
+}).middleware(['auth'])
