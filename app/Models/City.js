@@ -2,15 +2,15 @@
 
 const Model = use('Model')
 
-class State extends Model {
+class City extends Model {
   static boot() {
     super.boot()
     this.addTrait('NoTimestamp')
   }
 
-  cities() {
-    return this.hasMany('App/Models/City')
+  state() {
+    return this.belongsTo('App/Models/State')
   }
 }
 
-module.exports = State
+module.exports = City

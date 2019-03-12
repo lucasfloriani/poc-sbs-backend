@@ -10,5 +10,6 @@ Route.group(() => {
     .apiOnly()
     .except('store')
 
+  Route.resource('cities', 'CityController').only(['index', 'show'])
   Route.resource('states', 'StateController').only(['index', 'show'])
 }).middleware(['auth'])
