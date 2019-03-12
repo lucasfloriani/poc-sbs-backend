@@ -35,8 +35,7 @@ class StateSeeder {
     ]
 
     for await (const state of states) {
-      const stateInDB = await State.findBy('name', state.name)
-      if (!stateInDB) await State.create(state)
+      await State.findOrCreate({ name: state.name }, state)
     }
   }
 }
