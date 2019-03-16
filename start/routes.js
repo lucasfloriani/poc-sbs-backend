@@ -31,6 +31,11 @@ addPrefixToGroup(
     Route.resource('complaints', 'ComplaintController')
       .apiOnly()
       .except('index')
+    Route.resource('bookmarks', 'BookmarkController').only([
+      'index',
+      'show',
+      'destroy'
+    ])
   }).middleware(['auth', 'onlyUser']),
   'users'
 )

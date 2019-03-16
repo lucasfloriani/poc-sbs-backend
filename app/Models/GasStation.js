@@ -3,6 +3,10 @@
 const Model = use('Model')
 
 class GasStation extends Model {
+  bookmarks() {
+    return this.hasMany('App/Models/Bookmark')
+  }
+
   city() {
     return this.belongsTo('App/Models/City')
   }
