@@ -1,6 +1,8 @@
-"use strict";
+'use strict'
 
-const User = use("App/Models/User");
+const Database = use('Database')
+const Login = use('App/Models/Login')
+const User = use('App/Models/User')
 
 /**
  * Resourceful controller for interacting with users
@@ -11,8 +13,28 @@ class UserController {
    * GET users
    */
   async index() {
-    const users = await User.all();
-    return users;
+    const users = await User.query()
+      .select(
+        'users.id',
+        'users.cpf',
+        'logins.email',
+        'users.name',
+        'users.created_at',
+        'users.updated_at'
+      )
+      .innerJoin('logins', 'users.login_id', 'logins.id')
+      .fetch()
+    return users
+  }
+
+  /**
+   * Display a single user.
+   * GET users/:id
+   */
+  async show({ auth, params }) {
+    const user = await User.findOrFail(params.id)
+    user.email = auth.login.email
+    return user
   }
 
   /**
@@ -20,18 +42,38 @@ class UserController {
    * POST users
    */
   async store({ request }) {
-    const data = request.only(["cpf", "password", "name", "email"]);
-    const user = await User.create(data);
-    return user;
+    const trx = await Database.beginTransaction()
+    const loginData = {
+      ...request.only(['email', 'password']),
+      profile: 'user'
+    }
+    const login = await Login.create(loginData, trx)
+
+    const userData = { ...request.only(['cpf', 'name']), login_id: login.id }
+    const user = await User.create(userData, trx)
+    user.email = login.email
+    trx.commit()
+
+    return user
   }
 
   /**
-   * Display a single user.
-   * GET users/:id
+   * Update user details.
+   * PUT or PATCH users/:id
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
    */
-  async show({ params }) {
-    const user = await User.findOrFail(params.id);
-    return user;
+  async update({ auth, params, request }) {
+    const user = await User.findOrFail(params.id)
+    if (user.login_id !== auth.login.id) {
+      return response.status(401)
+    }
+    user.merge(request.only(['cpf', 'name']))
+    await user.save()
+    user.email = auth.login.email
+    return user
   }
 
   /**
@@ -39,12 +81,16 @@ class UserController {
    * DELETE users/:id
    */
   async destroy({ params, auth }) {
-    const user = await User.findOrFail(params.id);
-    if (user.user_id !== auth.user.id) {
-      return response.status(401);
+    const user = await User.findOrFail(params.id)
+    const login = await Login.findOrFail(user.login_id)
+    if (user.login_id !== auth.login.id) {
+      return response.status(401)
     }
-    await user.delete();
+    const trx = await Database.beginTransaction()
+    await user.delete(trx)
+    await login.delete(trx)
+    trx.commit()
   }
 }
 
-module.exports = UserController;
+module.exports = UserController
