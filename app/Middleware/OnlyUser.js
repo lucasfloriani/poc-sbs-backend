@@ -1,7 +1,6 @@
 'use strict'
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+
+const User = use('App/Models/User')
 
 class OnlyUser {
   /**
@@ -13,6 +12,7 @@ class OnlyUser {
     const login = await auth.getUser()
     if (login.profile === 'user') {
       auth.login = login
+      auth.user = await User.findByOrFail('login_id', login.id)
       await next()
     } else {
       return response.status(401)
