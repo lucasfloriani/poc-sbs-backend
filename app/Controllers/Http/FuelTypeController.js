@@ -1,6 +1,6 @@
 'use strict'
 
-const FueldType = use('App/Models/FueldType')
+const FuelType = use('App/Models/FuelType')
 
 /**
  * Resourceful controller for interacting with fueltypes
@@ -16,8 +16,8 @@ class FuelTypeController {
    * @param {View} ctx.view
    */
   async index() {
-    const fueldTypes = await FueldType.all()
-    return fueldTypes
+    const fuelTypes = await FuelType.all()
+    return fuelTypes
   }
 
   /**
@@ -30,8 +30,8 @@ class FuelTypeController {
    * @param {View} ctx.view
    */
   async show({ params }) {
-    const fueldType = await FueldType.findOrFail(params.id)
-    return fueldType
+    const fuelType = await FuelType.findOrFail(params.id)
+    return fuelType
   }
 }
 
