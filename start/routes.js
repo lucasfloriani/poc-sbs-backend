@@ -9,6 +9,7 @@ Route.post('/gas-stations', 'GasStationController.store')
 Route.resource('cities', 'CityController').only(['index', 'show'])
 Route.resource('states', 'StateController').only(['index', 'show'])
 Route.resource('fuel-types', 'FuelTypeController').only(['index', 'show'])
+Route.resource('payment-types', 'PaymentTypeController').only(['index', 'show'])
 
 Route.group(() => {
   Route.resource('users', 'UserController')
