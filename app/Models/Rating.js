@@ -3,13 +3,9 @@
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
 
-class Complaint extends Model {
+class Rating extends Model {
   gasStation() {
     return this.belongsTo('App/Models/GasStation')
-  }
-
-  ratings() {
-    return this.hasMany('App/Models/Rating')
   }
 
   user() {
@@ -17,4 +13,4 @@ class Complaint extends Model {
   }
 }
 
-module.exports = Complaint
+module.exports = Rating

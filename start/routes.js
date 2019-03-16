@@ -36,6 +36,9 @@ addPrefixToGroup(
       'show',
       'destroy'
     ])
+    Route.resource('ratings', 'RatingController')
+      .apiOnly()
+      .except('index')
   }).middleware(['auth', 'onlyUser']),
   'users'
 )
