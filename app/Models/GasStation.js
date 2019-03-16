@@ -7,12 +7,16 @@ class GasStation extends Model {
     return this.belongsTo('App/Models/City')
   }
 
-  state() {
-    return this.belongsTo('App/Models/State')
+  complaints() {
+    return this.hasMany('App/Models/Complaint')
   }
 
   login() {
     return this.belongsTo('App/Models/Login')
+  }
+
+  state() {
+    return this.belongsTo('App/Models/State')
   }
 }
 
