@@ -7,6 +7,12 @@ class PaymentType extends Model {
     super.boot()
     this.addTrait('NoTimestamp')
   }
+
+  gasStations() {
+    return this.belongsToMany('App/Models/GasStation').pivotModel(
+      use('App/Models/GasStationPaymentType')
+    )
+  }
 }
 
 module.exports = PaymentType

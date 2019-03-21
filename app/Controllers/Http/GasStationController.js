@@ -39,26 +39,12 @@ class GasStationController {
         'gas_stations.state_id',
         'states.name as state_name'
       )
+      .with('paymentTypes')
       .innerJoin('logins', 'gas_stations.login_id', 'logins.id')
       .innerJoin('cities', 'gas_stations.city_id', 'cities.id')
       .innerJoin('states', 'gas_stations.state_id', 'states.id')
       .fetch()
     return gasStations
-  }
-
-  /**
-   * Display a single gasstation.
-   * GET gasstations/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show({ auth, params }) {
-    const gasStation = await GasStation.findOrFail(params.id)
-    gasStation.email = auth.login.email
-    return gasStation
   }
 
   /**
@@ -95,9 +81,30 @@ class GasStationController {
       login_id: login.id
     }
     const gasStation = await GasStation.create(gasStationData, trx)
-    gasStation.email = login.email
+
+    const { paymentTypes } = request.post()
+    if (paymentTypes && paymentTypes.length > 0) {
+      await gasStation.paymentTypes(paymentTypes).attach()
+      await gasStation.load('paymentTypes')
+    }
     trx.commit()
 
+    return gasStation
+  }
+
+  /**
+   * Display a single gasstation.
+   * GET gasstations/:id
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   * @param {View} ctx.view
+   */
+  async show({ auth, params }) {
+    const gasStation = await GasStation.findOrFail(params.id)
+    gasStation.load('paymentTypes')
+    gasStation.email = auth.login.email
     return gasStation
   }
 
@@ -132,6 +139,13 @@ class GasStationController {
     )
     await gasStation.save()
     gasStation.email = auth.login.email
+
+    const { paymentTypes } = request.post()
+    if (paymentTypes && paymentTypes.length > 0) {
+      await gasStation.paymentTypes().sync(paymentTypes)
+      await gasStation.load('paymentTypes')
+    }
+
     return gasStation
   }
 
