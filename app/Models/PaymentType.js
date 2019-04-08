@@ -8,10 +8,12 @@ class PaymentType extends Model {
     this.addTrait('NoTimestamp')
   }
 
-  gasStations() {
-    return this.belongsToMany('App/Models/GasStation').pivotModel(
-      use('App/Models/GasStationPaymentType')
-    )
+  priceFuels() {
+    return this.hasMany('App/Models/PriceFuel')
+  }
+
+  priceFuelHistories() {
+    return this.hasMany('App/Models/PriceFuelHistory')
   }
 }
 

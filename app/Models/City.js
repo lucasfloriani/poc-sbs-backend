@@ -11,6 +11,10 @@ class City extends Model {
   state() {
     return this.belongsTo('App/Models/State')
   }
+
+  gasStations() {
+    return this.hasMany('App/Models/GasStation')
+  }
 }
 
 module.exports = City

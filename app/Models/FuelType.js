@@ -8,6 +8,14 @@ class FuelType extends Model {
     super.boot()
     this.addTrait('NoTimestamp')
   }
+
+  priceFuels() {
+    return this.hasMany('App/Models/PriceFuel')
+  }
+
+  priceFuelHistories() {
+    return this.hasMany('App/Models/PriceFuelHistory')
+  }
 }
 
 module.exports = FuelType

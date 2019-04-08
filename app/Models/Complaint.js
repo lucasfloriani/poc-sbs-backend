@@ -8,10 +8,6 @@ class Complaint extends Model {
     return this.belongsTo('App/Models/GasStation')
   }
 
-  ratings() {
-    return this.hasMany('App/Models/Rating')
-  }
-
   user() {
     return this.belongsTo('App/Models/User')
   }

@@ -14,6 +14,10 @@ class User extends Model {
   login() {
     return this.belongsTo('App/Models/Login')
   }
+
+  ratings() {
+    return this.hasMany('App/Models/Rating')
+  }
 }
 
 module.exports = User

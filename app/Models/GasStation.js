@@ -19,10 +19,12 @@ class GasStation extends Model {
     return this.belongsTo('App/Models/Login')
   }
 
-  paymentTypes() {
-    return this.belongsToMany('App/Models/PaymentType').pivotModel(
-      use('App/Models/GasStationPaymentType')
-    )
+  priceFuels() {
+    return this.hasMany('App/Models/PriceFuel')
+  }
+
+  priceFuelHistories() {
+    return this.hasMany('App/Models/PriceFuelHistory')
   }
 
   ratings() {
