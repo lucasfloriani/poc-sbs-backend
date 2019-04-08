@@ -89,7 +89,7 @@ class ComplaintController {
     if (auth.user.id !== complaint.user_id) {
       return response.status(401)
     }
-    complaint.merge(request.only(['gas_station_id', 'message']))
+    complaint.merge(request.only(['message']))
     await complaint.save()
     return complaint
   }
