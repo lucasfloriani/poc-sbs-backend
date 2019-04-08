@@ -39,7 +39,6 @@ class GasStationController {
         'gas_stations.state_id',
         'states.name as state_name'
       )
-      .with('paymentTypes')
       .innerJoin('logins', 'gas_stations.login_id', 'logins.id')
       .innerJoin('cities', 'gas_stations.city_id', 'cities.id')
       .innerJoin('states', 'gas_stations.state_id', 'states.id')
@@ -81,12 +80,6 @@ class GasStationController {
       login_id: login.id
     }
     const gasStation = await GasStation.create(gasStationData, trx)
-
-    const { paymentTypes } = request.post()
-    if (paymentTypes && paymentTypes.length > 0) {
-      await gasStation.paymentTypes(paymentTypes).attach()
-      await gasStation.load('paymentTypes')
-    }
     trx.commit()
 
     return gasStation
@@ -102,8 +95,9 @@ class GasStationController {
    * @param {View} ctx.view
    */
   async show({ auth, params }) {
+    // #TODO: Alterar o email, está pegando sempre o do próprio usuário e não
+    // o email do posto no banco de dados
     const gasStation = await GasStation.findOrFail(params.id)
-    gasStation.load('paymentTypes')
     gasStation.email = auth.login.email
     return gasStation
   }
@@ -116,7 +110,7 @@ class GasStationController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ auth, params, request }) {
+  async update({ auth, params, request, response }) {
     const gasStation = await GasStation.findOrFail(params.id)
     if (gasStation.login_id !== auth.login.id) {
       return response.status(401)
@@ -139,12 +133,6 @@ class GasStationController {
     )
     await gasStation.save()
     gasStation.email = auth.login.email
-
-    const { paymentTypes } = request.post()
-    if (paymentTypes && paymentTypes.length > 0) {
-      await gasStation.paymentTypes().sync(paymentTypes)
-      await gasStation.load('paymentTypes')
-    }
 
     return gasStation
   }
