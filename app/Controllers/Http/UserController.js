@@ -41,20 +41,23 @@ class UserController {
    * Create/save a new user.
    * POST users
    */
-  async store({ request }) {
+  async store({ auth, request }) {
     const trx = await Database.beginTransaction()
+    const { name, cpf, email, password } = request.all()
     const loginData = {
-      ...request.only(['email', 'password']),
+      email,
+      password,
       profile: 'user'
     }
     const login = await Login.create(loginData, trx)
 
-    const userData = { ...request.only(['cpf', 'name']), login_id: login.id }
+    const userData = { cpf, name, login_id: login.id }
     const user = await User.create(userData, trx)
     user.email = login.email
     trx.commit()
 
-    return user
+    const token = await auth.attempt(email, password)
+    return { token, user }
   }
 
   /**
@@ -65,7 +68,7 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ auth, params, request }) {
+  async update({ auth, params, request, response }) {
     const user = await User.findOrFail(params.id)
     if (user.login_id !== auth.login.id) {
       return response.status(401)
