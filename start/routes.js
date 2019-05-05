@@ -11,8 +11,8 @@ Route.post('gas-stations', 'GasStationController.store').validator(
   'StoreGasStation'
 )
 Route.post('authenticate', 'AuthController.authenticate').validator('Auth')
-Route.resource('cities', 'CityController').only(['index', 'show'])
-Route.resource('states', 'StateController').only(['index', 'show'])
+Route.get('states', 'StateController.index')
+Route.get('states/:stateID/cities', 'CityController.index')
 Route.resource('fuel-types', 'FuelTypeController').only(['index', 'show'])
 Route.resource('payment-types', 'PaymentTypeController').only(['index', 'show'])
 
@@ -21,6 +21,7 @@ Route.group(() => {
     'gas-stations/:id/complaints',
     'ComplaintController.gasStationIndex'
   )
+  Route.get('gas-stations', 'GasStationController.index')
 }).middleware(['auth'])
 
 addPrefixToGroup(
@@ -61,7 +62,7 @@ addPrefixToGroup(
   Route.group(() => {
     Route.resource('', 'GasStationController')
       .apiOnly()
-      .except('store')
+      .except(['index', 'store'])
       .validator(new Map([[['gas-stations.update'], ['UpdateGasStation']]]))
 
     Route.resource('price-fuel', 'PriceFuelController')
