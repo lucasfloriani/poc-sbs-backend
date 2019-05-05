@@ -4,6 +4,10 @@ const Model = use('Model')
 const Hash = use('Hash')
 
 class Login extends Model {
+  static get hidden () {
+    return ['password']
+  }
+
   static boot() {
     super.boot()
     this.addTrait('NoTimestamp')
