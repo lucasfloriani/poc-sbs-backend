@@ -15,23 +15,13 @@ class CityController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index() {
-    const cities = await City.all()
+  async index({ params }) {
+    const cities = await City
+      .query()
+      .where('state_id', params.stateID)
+      .orderBy('name', 'asc')
+      .fetch()
     return cities
-  }
-
-  /**
-   * Display a single city.
-   * GET cities/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show({ params }) {
-    const city = await City.findOrFail(params.id)
-    return city
   }
 }
 
