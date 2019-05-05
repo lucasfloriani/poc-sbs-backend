@@ -17,33 +17,108 @@ class GasStationController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index() {
-    const gasStations = await GasStation.query()
-      .select(
-        'gas_stations.id',
-        'logins.email',
-        'gas_stations.cnpj',
-        'gas_stations.business_name',
-        'gas_stations.fantasy_name',
-        'gas_stations.state_registration',
-        'gas_stations.anp',
-        'gas_stations.cep',
-        'gas_stations.address',
-        'gas_stations.complement',
-        'gas_stations.neighborhood',
-        'gas_stations.geo_location',
-        'gas_stations.created_at',
-        'gas_stations.updated_at',
-        'gas_stations.city_id',
-        'cities.name as city_name',
-        'gas_stations.state_id',
-        'states.name as state_name'
-      )
-      .innerJoin('logins', 'gas_stations.login_id', 'logins.id')
-      .innerJoin('cities', 'gas_stations.city_id', 'cities.id')
-      .innerJoin('states', 'gas_stations.state_id', 'states.id')
-      .fetch()
-    return gasStations
+  async index({ request }) {
+    const queryParams = request.get()
+    const gasStations = GasStation.query()
+      .with('bookmarks')
+      .with('complaints')
+      .with('city')
+      .with('state')
+      .with('login')
+      .with('ratings')
+      .with('priceFuels', (builder) => {
+        builder.with('fuelType', (fuelTypeBuilder) => {
+          if (queryParams.fuelType) {
+            fuelTypeBuilder.where('name', queryParams.fuelType)
+          }
+        })
+        builder.with('paymentType', (paymentTypeBuilder) => {
+          if (queryParams.paymentType) {
+            paymentTypeBuilder.where('name', queryParams.paymentType)
+          }
+        })
+      })
+      .where(function () {
+        if (queryParams.name) {
+          this.where('fantasy_name', 'LIKE', `%${queryParams.name}%`)
+        }
+      })
+      .whereHas('city', (builder) => {
+        if (queryParams.city) {
+          builder.where('id', queryParams.city)
+        }
+      }, '=', 1)
+      .whereHas('state', (builder) => {
+        if (queryParams.state) {
+          builder.where('id', queryParams.state)
+        }
+      }, '=', 1)
+      .whereHas('priceFuels', (priceFuelsBuilder) => {
+        if (queryParams.fuelType) {
+          priceFuelsBuilder.whereHas('fuelType', (fuelTypeBuilder) => {
+            fuelTypeBuilder.where('name', queryParams.fuelType)
+          })
+        }
+        if (queryParams.paymentType) {
+          priceFuelsBuilder.whereHas('paymentType', (paymentTypeBuilder) => {
+            paymentTypeBuilder.where('name', queryParams.paymentType)
+          })
+        }
+        if (queryParams.minPrice) {
+          fuelTypeBuilder.where('price', '>=', queryParams.minPrice)
+        }
+        if (queryParams.maxPrice) {
+          fuelTypeBuilder.where('price', '<=', queryParams.minPrice)
+        }
+      })
+
+    if (queryParams.orderType) {
+      switch (queryParams.orderType) {
+        case 'lowestPrice':
+          gasStations
+            .leftJoin('price_fuels as p','gas_stations.id','p.gas_station_id')
+            .orderBy('p.price','asc')
+          break
+        case 'highestPrice':
+          gasStations
+            .leftJoin('price_fuels as p','gas_stations.id','p.gas_station_id')
+            .orderBy('p.price','desc')
+          break
+        case 'nearest':
+          break
+        case 'lessBookmarked':
+          gasStations
+            .leftJoin('bookmarks as b', 'gas_stations.id', 'b.gas_stations_id')
+            .orderBy(Database.raw('COUNT(b.*)'), 'asc')
+          break
+        case 'mostBookmarked':
+          gasStations
+            .leftJoin('bookmarks as b', 'gas_stations.id', 'b.gas_stations_id')
+            .orderBy(Database.raw('COUNT(b.*)'), 'desc')
+            break
+        case 'lessComplained':
+          gasStations
+            .leftJoin('complaints as c', 'gas_stations.id', 'c.gas_stations_id')
+            .orderBy(Database.raw('COUNT(c.*)'), 'desc')
+          break
+        case 'mostComplained':
+          gasStations
+            .leftJoin('complaints as c', 'gas_stations.id', 'c.gas_stations_id')
+            .orderBy(Database.raw('COUNT(c.*)'), 'desc')
+          break
+      }
+    }
+
+    if (queryParams.rating) {
+      gasStations.whereHas('ratings', (builder) => {
+        builder
+          .select(Database.raw("AVG(rating) as media"))
+          .groupBy('gas_station_id')
+          .having(Database.raw('AVG(rating)'), '=', queryParams.rating)
+      })
+    }
+
+    return await gasStations.fetch()
   }
 
   /**
