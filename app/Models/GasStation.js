@@ -3,6 +3,10 @@
 const Model = use('Model')
 
 class GasStation extends Model {
+  static get hidden () {
+    return ['login_id']
+  }
+
   bookmarks() {
     return this.hasMany('App/Models/Bookmark')
   }
