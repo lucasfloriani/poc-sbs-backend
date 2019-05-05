@@ -19,20 +19,6 @@ class StateController {
     const states = await State.all()
     return states
   }
-
-  /**
-   * Display a single state.
-   * GET states/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show({ params }) {
-    const state = await State.findOrFail(params.id)
-    return state
-  }
 }
 
 module.exports = StateController
