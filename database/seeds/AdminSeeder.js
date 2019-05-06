@@ -11,7 +11,7 @@ class AdminSeeder {
     const trx = await Database.beginTransaction()
     const loginData = {
       email: Env.get('ADMIN_EMAIL'),
-      password: await Hash.make(Env.get('ADMIN_PASSWORD')),
+      password: Env.get('ADMIN_PASSWORD'),
       profile: 'admin'
     }
     const login = await Login.create(loginData, trx)
