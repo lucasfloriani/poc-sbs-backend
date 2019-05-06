@@ -1,6 +1,7 @@
 'use strict'
 
 const Login = use('App/Models/Login')
+const Admin = use('App/Models/Admin')
 const User = use('App/Models/User')
 const GasStation = use('App/Models/GasStation')
 
@@ -20,6 +21,11 @@ class AuthController {
     if (login.profile === 'user') {
       const user =  await User.findBy('login_id', login.id)
       return { token, user }
+    }
+
+    if (login.profile === 'admin') {
+      const admin =  await Admin.findBy('login_id', login.id)
+      return { token, user: admin }
     }
 
     const gasStation = await GasStation.findBy('login_id', login.id)
