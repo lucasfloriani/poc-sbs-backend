@@ -53,24 +53,24 @@ class GasStationController {
           builder.where('id', queryParams.state)
         }
       }, '=', 1)
-      .whereHas('priceFuels', (priceFuelsBuilder) => {
-        if (queryParams.fuelType) {
-          priceFuelsBuilder.whereHas('fuelType', (fuelTypeBuilder) => {
-            fuelTypeBuilder.where('name', queryParams.fuelType)
-          })
-        }
-        if (queryParams.paymentType) {
-          priceFuelsBuilder.whereHas('paymentType', (paymentTypeBuilder) => {
-            paymentTypeBuilder.where('name', queryParams.paymentType)
-          })
-        }
-        if (queryParams.minPrice) {
-          fuelTypeBuilder.where('price', '>=', queryParams.minPrice)
-        }
-        if (queryParams.maxPrice) {
-          fuelTypeBuilder.where('price', '<=', queryParams.minPrice)
-        }
-      })
+      // .whereHas('priceFuels', (priceFuelsBuilder) => {
+      //   if (queryParams.fuelType) {
+      //     priceFuelsBuilder.whereHas('fuelType', (fuelTypeBuilder) => {
+      //       fuelTypeBuilder.where('name', queryParams.fuelType)
+      //     })
+      //   }
+      //   if (queryParams.paymentType) {
+      //     priceFuelsBuilder.whereHas('paymentType', (paymentTypeBuilder) => {
+      //       paymentTypeBuilder.where('name', queryParams.paymentType)
+      //     })
+      //   }
+      //   if (queryParams.minPrice) {
+      //     fuelTypeBuilder.where('price', '>=', queryParams.minPrice)
+      //   }
+      //   if (queryParams.maxPrice) {
+      //     fuelTypeBuilder.where('price', '<=', queryParams.minPrice)
+      //   }
+      // })
 
     if (queryParams.orderType) {
       switch (queryParams.orderType) {
@@ -185,11 +185,8 @@ class GasStationController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ auth, params, request, response }) {
+  async update({ params, request }) {
     const gasStation = await GasStation.findOrFail(params.id)
-    if (gasStation.login_id !== auth.login.id) {
-      return response.status(401)
-    }
     gasStation.merge(
       request.only([
         'cnpj',
@@ -207,8 +204,6 @@ class GasStationController {
       ])
     )
     await gasStation.save()
-    gasStation.email = auth.login.email
-
     return gasStation
   }
 
