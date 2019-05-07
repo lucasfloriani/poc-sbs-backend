@@ -17,8 +17,11 @@ class StoreGasStation {
       address: 'required|string',
       complement: 'required|string',
       neighborhood: 'required|string',
-      geo_location:
-        'required|string|regex:^[-+]?([1-8]?d(.d+)?|90(.0+)?),s*[-+]?(180(.0+)?|((1[0-7]d)|([1-9]?d))(.d+)?)$',
+      geo_location: [
+        'required',
+        'string',
+        'regex:^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$',
+      ],
       city_id: 'required|integer',
       state_id: 'required|integer'
     }
