@@ -7,22 +7,30 @@ const addPrefixToGroup = (group, prefix) => {
 
 const Route = use('Route')
 Route.post('users', 'UserController.store').validator('StoreUser')
-Route.post('gas-stations', 'GasStationController.store').validator(
-  'StoreGasStation'
-)
+
 Route.post('authenticate', 'AuthController.authenticate').validator('Auth')
 Route.get('states', 'StateController.index')
 Route.get('states/:stateID/cities', 'CityController.index')
 Route.resource('fuel-types', 'FuelTypeController').only(['index', 'show'])
 Route.resource('payment-types', 'PaymentTypeController').only(['index', 'show'])
 
-Route.group(() => {
-  Route.get(
-    'gas-stations/:id/complaints',
-    'ComplaintController.gasStationIndex'
-  )
-  Route.get('gas-stations', 'GasStationController.index')
-}).middleware(['auth'])
+addPrefixToGroup(
+  Route.group(() => {
+    Route.get('', 'GasStationController.index')
+    Route.get(':id', 'GasStationController.show')
+    Route.get(':id/complaints', 'ComplaintController.gasStationIndex')
+  }).middleware(['auth']),
+  'gas-stations'
+)
+
+addPrefixToGroup(
+  Route.group(() => {
+    Route.post('', 'GasStationController.store').validator('StoreGasStation')
+    Route.put(':id', 'GasStationController.update').validator('UpdateGasStation')
+  }).middleware(['auth', 'onlyAdmin']),
+  'gas-stations'
+)
+
 
 addPrefixToGroup(
   Route.group(() => {
@@ -60,11 +68,6 @@ addPrefixToGroup(
 
 addPrefixToGroup(
   Route.group(() => {
-    Route.resource('', 'GasStationController')
-      .apiOnly()
-      .except(['index', 'store'])
-      .validator(new Map([[['gas-stations.update'], ['UpdateGasStation']]]))
-
     Route.resource('price-fuel', 'PriceFuelController')
       .apiOnly()
       .validator(
