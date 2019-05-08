@@ -4,9 +4,11 @@ const { formatters } = use('Validator')
 
 class UpdateUser {
   get rules() {
+    const userID = this.ctx.params.id
+
     return {
       cpf:
-        'required|string|regex:^([0-9]{3}.){2}[0-9]{3}-[0-9]{2}$|unique:users,cpf',
+        `required|string|regex:^([0-9]{3}.){2}[0-9]{3}-[0-9]{2}$|unique:users,cpf,id,${userID}`,
       name: 'required|string'
     }
   }

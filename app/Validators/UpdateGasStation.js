@@ -4,9 +4,11 @@ const { formatters } = use('Validator')
 
 class UpdateGasStation {
   get rules() {
+    const gasStationID = this.ctx.params.id
+
     return {
       cnpj:
-        'required|string|regex:^[0-9]{2}.?[0-9]{3}.?[0-9]{3}/?[0-9]{4}-?[0-9]{2}$|unique:gas_stations,cnpj',
+        `required|string|regex:^[0-9]{2}.?[0-9]{3}.?[0-9]{3}/?[0-9]{4}-?[0-9]{2}$|unique:gas_stations,cnpj,id,${gasStationID}`,
       business_name: 'required|string',
       fantasy_name: 'required|string',
       state_registration: 'required|string',
