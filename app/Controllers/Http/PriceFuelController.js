@@ -17,11 +17,12 @@ class PriceFuelController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index() {
+  async index({ params }) {
     const priceFuels = await PriceFuel.query()
       .with('fuelType')
       .with('gasStation')
       .with('paymentType')
+      .where('gas_station_id', params.gasStation)
       .fetch()
 
     return priceFuels
@@ -36,7 +37,6 @@ class PriceFuelController {
    * @param {Response} ctx.response
    */
   async store({ auth, request, response }) {
-    const trx = await Database.beginTransaction()
     const priceFuelData = {
       ...request.only([
         'price',
@@ -45,11 +45,13 @@ class PriceFuelController {
         'fuel_type_id'
       ])
     }
-    if (priceFuelData.gas_station_id !== auth.login.id) {
+
+    if (priceFuelData.gas_station_id != auth.gasStation.id) {
       return response.status(401)
     }
 
-    const priceFuel = await PriceFuel.create(priceFuelData, tx)
+    const trx = await Database.beginTransaction()
+    const priceFuel = await PriceFuel.create(priceFuelData, trx)
     await PriceFuelHistory.create({ ...priceFuelData, type: 'create' }, trx)
     trx.commit()
 
