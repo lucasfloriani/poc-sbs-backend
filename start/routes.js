@@ -68,14 +68,10 @@ addPrefixToGroup(
 
 addPrefixToGroup(
   Route.group(() => {
-    Route.resource('price-fuel', 'PriceFuelController')
-      .apiOnly()
-      .validator(
-        new Map([
-          [['price-fuel.store'], ['StorePriceFuel']],
-          [['price-fuel.update'], ['UpdatePriceFuel']]
-        ])
-      )
+    Route.get(':gasStation/price-fuels', 'PriceFuelController.index')
+    Route.post('price-fuel', 'PriceFuelController.store').validator('StorePriceFuel')
+    Route.put('price-fuel/:id', 'PriceFuelController.update').validator('UpdatePriceFuel')
+    Route.delete('price-fuel/:id', 'PriceFuelController.destroy')
   }).middleware(['auth', 'onlyGasStation']),
   'gas-stations'
 )
