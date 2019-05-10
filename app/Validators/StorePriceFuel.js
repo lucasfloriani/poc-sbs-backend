@@ -17,11 +17,11 @@ class StorePriceFuel {
       'gas_station_id.required': 'Posto de gasolina é obrigatório.',
       'gas_station_id.integer': 'Posto de gasolina inválido.',
       'payment_type_id.required': 'Tipo de pagamento é obrigatório.',
-      'payment_type_id.string': 'Tipo de pagamento inválido.',
+      'payment_type_id.integer': 'Tipo de pagamento inválido.',
       'fuel_type_id.required': 'Tipo de combustível é obrigatório.',
-      'fuel_type_id.string': 'Tipo de combustível inválido.',
+      'fuel_type_id.integer': 'Tipo de combustível inválido.',
       'price.required': 'Preço é obrigatório.',
-      'price.string': 'Preço precisa ser um número.'
+      'price.number': 'Preço precisa ser um número.'
     }
   }
 
