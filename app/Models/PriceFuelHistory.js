@@ -4,6 +4,14 @@
 const Model = use('Model')
 
 class PriceFuelHistory extends Model {
+  static get primaryKey() {
+    return null
+  }
+
+  static get incrementing() {
+    return false
+  }
+
   fuelType() {
     return this.belongsTo('App/Models/FuelType')
   }
