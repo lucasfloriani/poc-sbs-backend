@@ -81,15 +81,21 @@ class PriceFuelController {
    * @param {Response} ctx.response
    */
   async update({ auth, params, request, response }) {
-    const trx = Database.beginTransaction()
     const priceFuel = await PriceFuel.findOrFail(params.id)
-    if (priceFuel.gas_station_id !== auth.login.id) {
+    if (priceFuel.gas_station_id != auth.gasStation.id) {
       return response.status(401)
     }
-
     priceFuel.merge(request.only(['price', 'payment_type_id', 'fuel_type_id']))
+
+    const trx = await Database.beginTransaction()
     await priceFuel.save(trx)
-    await PriceFuelHistory.create({ ...priceFuel, type: 'update' }, trx)
+    await PriceFuelHistory.create({
+      gas_station_id: priceFuel.gas_station_id,
+      payment_type_id: priceFuel.payment_type_id,
+      fuel_type_id: priceFuel.fuel_type_id,
+      price: priceFuel.price,
+      type: 'update',
+    }, trx )
     trx.commit()
 
     return priceFuel
