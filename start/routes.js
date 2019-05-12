@@ -69,6 +69,7 @@ addPrefixToGroup(
 addPrefixToGroup(
   Route.group(() => {
     Route.get(':gasStation/price-fuels', 'PriceFuelController.index')
+    Route.get('price-fuel/:id', 'PriceFuelController.show')
     Route.post('price-fuel', 'PriceFuelController.store').validator('StorePriceFuel')
     Route.put('price-fuel/:id', 'PriceFuelController.update').validator('UpdatePriceFuel')
     Route.delete('price-fuel/:id', 'PriceFuelController.destroy')
