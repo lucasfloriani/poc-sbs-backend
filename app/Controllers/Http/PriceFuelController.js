@@ -111,11 +111,18 @@ class PriceFuelController {
    */
   async destroy({ auth, params, response }) {
     const priceFuel = await PriceFuel.findOrFail(params.id)
-    if (priceFuel.gas_station_id !== auth.login.id) {
+    if (priceFuel.gas_station_id !== auth.gasStation.id) {
       return response.status(401)
     }
+
     const trx = await Database.beginTransaction()
-    await PriceFuelHistory.create({ ...priceFuel, type: 'delete' }, trx)
+    await PriceFuelHistory.create({
+      gas_station_id: priceFuel.gas_station_id,
+      payment_type_id: priceFuel.payment_type_id,
+      fuel_type_id: priceFuel.fuel_type_id,
+      price: priceFuel.price,
+      type: 'delete',
+    }, trx)
     await priceFuel.delete(trx)
     trx.commit()
   }
