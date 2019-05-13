@@ -49,9 +49,10 @@ addPrefixToGroup(
           [['complaints.update'], ['UpdateComplaint']]
         ])
       )
-    Route.resource('bookmarks', 'BookmarkController')
-      .only(['index', 'store', 'destroy'])
-      .validator(new Map([[['bookmarks.store'], ['StoreBookmark']]]))
+
+    Route.get('bookmarks', 'BookmarkController.index')
+    Route.post('bookmarks', 'BookmarkController.store').validator('StoreBookmark')
+    Route.delete('bookmarks/:id', 'BookmarkController.destroy')
 
     Route.resource('ratings', 'RatingController')
       .apiOnly()
