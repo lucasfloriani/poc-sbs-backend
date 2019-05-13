@@ -62,10 +62,11 @@ class RatingController {
    */
   async destroy({ auth, params, response }) {
     const rating = await Rating.findOrFail(params.id)
-    if (auth.user.id !== rating.user_id) {
+    if (auth.user.id != rating.user_id) {
       return response.status(401)
     }
     await rating.delete()
+    return rating
   }
 }
 
