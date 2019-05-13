@@ -55,10 +55,11 @@ class BookmarkController {
    */
   async destroy({ auth, params, response }) {
     const bookmark = await Bookmark.findOrFail(params.id)
-    if (auth.user.id !== bookmark.user_id) {
+    if (auth.user.id != bookmark.user_id) {
       return response.status(401)
     }
     await bookmark.delete()
+    return bookmark
   }
 }
 
