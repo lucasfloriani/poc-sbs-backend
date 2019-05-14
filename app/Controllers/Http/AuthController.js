@@ -20,15 +20,18 @@ class AuthController {
 
     if (login.profile === 'user') {
       const user =  await User.findBy('login_id', login.id)
+      user.email = login.email
       return { token, user }
     }
 
     if (login.profile === 'admin') {
       const admin =  await Admin.findBy('login_id', login.id)
+      admin.email = login.email
       return { token, user: admin }
     }
 
     const gasStation = await GasStation.findBy('login_id', login.id)
+    gasStation.email = login.email
     return { token, user: gasStation }
   }
 }
