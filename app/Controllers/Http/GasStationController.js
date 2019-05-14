@@ -53,24 +53,24 @@ class GasStationController {
           builder.where('id', queryParams.state)
         }
       }, '=', 1)
-      // .whereHas('priceFuels', (priceFuelsBuilder) => {
-      //   if (queryParams.fuelType) {
-      //     priceFuelsBuilder.whereHas('fuelType', (fuelTypeBuilder) => {
-      //       fuelTypeBuilder.where('name', queryParams.fuelType)
-      //     })
-      //   }
-      //   if (queryParams.paymentType) {
-      //     priceFuelsBuilder.whereHas('paymentType', (paymentTypeBuilder) => {
-      //       paymentTypeBuilder.where('name', queryParams.paymentType)
-      //     })
-      //   }
-      //   if (queryParams.minPrice) {
-      //     fuelTypeBuilder.where('price', '>=', queryParams.minPrice)
-      //   }
-      //   if (queryParams.maxPrice) {
-      //     fuelTypeBuilder.where('price', '<=', queryParams.minPrice)
-      //   }
-      // })
+      .whereHas('priceFuels', (priceFuelsBuilder) => {
+        if (queryParams.fuelType) {
+          priceFuelsBuilder.whereHas('fuelType', (fuelTypeBuilder) => {
+            fuelTypeBuilder.where('name', queryParams.fuelType)
+          })
+        }
+        if (queryParams.paymentType) {
+          priceFuelsBuilder.whereHas('paymentType', (paymentTypeBuilder) => {
+            paymentTypeBuilder.where('name', queryParams.paymentType)
+          })
+        }
+        if (queryParams.minPrice) {
+          priceFuelsBuilder.where('price', '>=', queryParams.minPrice)
+        }
+        if (queryParams.maxPrice) {
+          priceFuelsBuilder.where('price', '<=', queryParams.maxPrice)
+        }
+      })
 
     if (queryParams.orderType) {
       switch (queryParams.orderType) {
@@ -88,17 +88,17 @@ class GasStationController {
           break
         case 'lessBookmarked':
           gasStations
-            .leftJoin('bookmarks as b', 'gas_stations.id', 'b.gas_stations_id')
+            .leftJoin('bookmarks as b', 'gas_stations.id', 'b.gas_station_id')
             .orderBy(Database.raw('COUNT(b.*)'), 'asc')
           break
         case 'mostBookmarked':
           gasStations
-            .leftJoin('bookmarks as b', 'gas_stations.id', 'b.gas_stations_id')
+            .leftJoin('bookmarks as b', 'gas_stations.id', 'b.gas_station_id')
             .orderBy(Database.raw('COUNT(b.*)'), 'desc')
             break
         case 'lessComplained':
           gasStations
-            .leftJoin('complaints as c', 'gas_stations.id', 'c.gas_stations_id')
+            .leftJoin('complaints as c', 'gas_stations.id', 'c.gas_station_id')
             .orderBy(Database.raw('COUNT(c.*)'), 'desc')
           break
         case 'mostComplained':
@@ -119,6 +119,30 @@ class GasStationController {
     }
 
     return await gasStations.fetch()
+  }
+
+  /**
+   * Show a list of all gasstations that user has bookmarked
+   * GET gasstations/bookmarks
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   * @param {View} ctx.view
+   */
+  async indexBookmark({ auth }) {
+    return await GasStation.query()
+      .with('bookmarks')
+      .with('complaints')
+      .with('city')
+      .with('state')
+      .with('login')
+      .with('ratings')
+      .with('priceFuels')
+      .whereHas('bookmarks', (builder) => {
+        builder.where('user_id', auth.user.id)
+      })
+      .fetch()
   }
 
   /**
