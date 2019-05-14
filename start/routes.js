@@ -60,6 +60,7 @@ addPrefixToGroup(
 
     // Private user bookmarks routes
     Route.get('bookmarks', 'BookmarkController.index')
+    Route.get('gas-stations/bookmark', 'GasStationController.indexBookmark')
     Route.post('bookmarks', 'BookmarkController.store').validator('StoreBookmark')
     Route.delete('bookmarks/:id', 'BookmarkController.destroy')
 
