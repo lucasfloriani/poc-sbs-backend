@@ -86,7 +86,7 @@ class ComplaintController {
    */
   async update({ params, request, response }) {
     const complaint = await Complaint.findOrFail(params.id)
-    if (auth.user.id !== complaint.user_id) {
+    if (auth.user.id != complaint.user_id) {
       return response.status(401)
     }
     complaint.merge(request.only(['message']))
@@ -104,10 +104,11 @@ class ComplaintController {
    */
   async destroy({ auth, params, response }) {
     const complaint = await Complaint.findOrFail(params.id)
-    if (auth.user.id !== complaint.user_id) {
+    if (auth.user.id != complaint.user_id) {
       return response.status(401)
     }
     await complaint.delete()
+    return complaint
   }
 }
 
