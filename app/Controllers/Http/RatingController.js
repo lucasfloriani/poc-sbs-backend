@@ -42,7 +42,7 @@ class RatingController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {
+  async update({ auth, params, request, response }) {
     const rating = await Rating.findOrFail(params.id)
     if (auth.user.id !== rating.user_id) {
       return response.status(401)
