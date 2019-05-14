@@ -84,7 +84,7 @@ class ComplaintController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {
+  async update({ auth, params, request, response }) {
     const complaint = await Complaint.findOrFail(params.id)
     if (auth.user.id != complaint.user_id) {
       return response.status(401)
