@@ -123,7 +123,7 @@ class GasStationController {
 
   /**
    * Show a list of all gasstations that user has bookmarked
-   * GET gasstations/bookmarks
+   * GET gas-stations/bookmarks
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -140,6 +140,30 @@ class GasStationController {
       .with('ratings')
       .with('priceFuels')
       .whereHas('bookmarks', (builder) => {
+        builder.where('user_id', auth.user.id)
+      })
+      .fetch()
+  }
+
+  /**
+   * Show a list of all gasstations that user has rating
+   * GET gas-stations/ratings
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   * @param {View} ctx.view
+   */
+  async indexRating({ auth }) {
+    return await GasStation.query()
+      .with('bookmarks')
+      .with('complaints')
+      .with('city')
+      .with('state')
+      .with('login')
+      .with('ratings')
+      .with('priceFuels')
+      .whereHas('ratings', (builder) => {
         builder.where('user_id', auth.user.id)
       })
       .fetch()

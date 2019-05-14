@@ -66,6 +66,7 @@ addPrefixToGroup(
 
     // Private user ratings routes
     Route.get('ratings/:id', 'RatingController.show')
+    Route.get('gas-stations/rating', 'GasStationController.indexRating')
     Route.post('ratings', 'RatingController.store').validator('StoreRating')
     Route.put('ratings/:id', 'RatingController.update').validator('UpdateRating')
     Route.delete('ratings/:id', 'RatingController.destroy')
