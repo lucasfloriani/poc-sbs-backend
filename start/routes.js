@@ -54,6 +54,7 @@ addPrefixToGroup(
     // Private user complaints routes
     Route.get('complaints', 'ComplaintController.userIndex')
     Route.get('complaints/:id', 'ComplaintController.show')
+    Route.get('gas-stations/complaint', 'GasStationController.indexComplaint')
     Route.post('complaints', 'ComplaintController.store').validator('StoreComplaint')
     Route.put('complaints/:id', 'ComplaintController.update').validator('UpdateComplaint')
     Route.delete('complaints/:id', 'ComplaintController.destroy')

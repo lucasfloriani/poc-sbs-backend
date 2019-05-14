@@ -123,7 +123,7 @@ class GasStationController {
 
   /**
    * Show a list of all gasstations that user has bookmarked
-   * GET gas-stations/bookmarks
+   * GET gas-stations/bookmark
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -146,8 +146,32 @@ class GasStationController {
   }
 
   /**
+   * Show a list of all gasstations that user has complaint
+   * GET gas-stations/complaint
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   * @param {View} ctx.view
+   */
+  async indexComplaint({ auth }) {
+    return await GasStation.query()
+      .with('bookmarks')
+      .with('complaints')
+      .with('city')
+      .with('state')
+      .with('login')
+      .with('ratings')
+      .with('priceFuels')
+      .whereHas('complaints', (builder) => {
+        builder.where('user_id', auth.user.id)
+      })
+      .fetch()
+  }
+
+  /**
    * Show a list of all gasstations that user has rating
-   * GET gas-stations/ratings
+   * GET gas-stations/rating
    *
    * @param {object} ctx
    * @param {Request} ctx.request
