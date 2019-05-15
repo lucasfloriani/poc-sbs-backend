@@ -242,11 +242,20 @@ class GasStationController {
    * @param {View} ctx.view
    */
   async show({ auth, params }) {
-    // #TODO: Alterar o email, está pegando sempre o do próprio usuário e não
-    // o email do posto no banco de dados
-    const gasStation = await GasStation.findOrFail(params.id)
-    gasStation.email = auth.login.email
-    return gasStation
+    return await GasStation.query()
+      .where('id', params.id)
+      .with('bookmarks')
+      .with('complaints')
+      .with('city')
+      .with('state')
+      .with('login')
+      .with('ratings')
+      .with('priceFuels')
+      .with('priceFuelHistories', (builder) => {
+        builder.with('fuelType')
+        builder.with('paymentType')
+      })
+      .first()
   }
 
   /**
