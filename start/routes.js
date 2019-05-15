@@ -35,11 +35,15 @@ addPrefixToGroup(
 // Private admin routes
 addPrefixToGroup(
   Route.group(() => {
+    // Private admin complaints routes
+    Route.get('complaints', 'ComplaintController.index')
+
     // Private admin gasStation routes
-    Route.post('', 'GasStationController.store').validator('StoreGasStation')
-    Route.put(':id', 'GasStationController.update').validator('UpdateGasStation')
+    Route.post('gas-stations', 'GasStationController.store').validator('StoreGasStation')
+    Route.put('gas-stations/:id', 'GasStationController.update').validator('UpdateGasStation')
   }).middleware(['auth', 'onlyAdmin']),
-  'gas-stations'
+  // 'gas-stations'
+  'admin'
 )
 
 // Private user routes

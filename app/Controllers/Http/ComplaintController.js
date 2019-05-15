@@ -7,6 +7,23 @@ const Complaint = use('App/Models/Complaint')
  */
 class ComplaintController {
   /**
+   * Show a list of all complaints.
+   * GET fueltypes
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   * @param {View} ctx.view
+   */
+  async index() {
+    const complaints = await Complaint.query()
+      .with('gasStation')
+      .with('user')
+      .fetch()
+    return complaints
+  }
+
+  /**
    * Show a list of all complaints of user.
    * GET complaints
    *
