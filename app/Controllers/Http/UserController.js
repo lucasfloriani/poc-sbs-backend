@@ -41,14 +41,10 @@ class UserController {
    * Create/save a new user.
    * POST users
    */
-  async store({ auth, request }) {
+  async store({ request }) {
     const trx = await Database.beginTransaction()
     const { name, cpf, email, password } = request.all()
-    const loginData = {
-      email,
-      password,
-      profile: 'user'
-    }
+    const loginData = { email, password, profile: 'user' }
     const login = await Login.create(loginData, trx)
 
     const userData = { cpf, name, login_id: login.id }
@@ -56,8 +52,7 @@ class UserController {
     user.email = login.email
     trx.commit()
 
-    const token = await auth.attempt(email, password)
-    return { token, user }
+    return user
   }
 
   /**
