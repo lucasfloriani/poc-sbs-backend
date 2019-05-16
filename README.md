@@ -8,6 +8,7 @@ Backend do projeto POC SBS
 
 - Adonis CLI
 - Git
+- Node
 - Postgres
 
 ### Como iniciar o projeto
