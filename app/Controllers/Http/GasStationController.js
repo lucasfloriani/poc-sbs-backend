@@ -88,23 +88,31 @@ class GasStationController {
           break
         case 'lessBookmarked':
           gasStations
+            .select('gas_stations.*', Database.raw("COUNT(b.*) as media"))
             .leftJoin('bookmarks as b', 'gas_stations.id', 'b.gas_station_id')
-            .orderBy(Database.raw('COUNT(b.*)'), 'asc')
+            .groupBy('gas_stations.id')
+            .orderBy('media', 'asc')
           break
         case 'mostBookmarked':
           gasStations
+            .select('gas_stations.*', Database.raw("COUNT(b.*) as media"))
             .leftJoin('bookmarks as b', 'gas_stations.id', 'b.gas_station_id')
-            .orderBy(Database.raw('COUNT(b.*)'), 'desc')
+            .groupBy('gas_stations.id')
+            .orderBy('media', 'desc')
             break
         case 'lessComplained':
           gasStations
+            .select('gas_stations.*', Database.raw('COUNT(c.*) as media'))
             .leftJoin('complaints as c', 'gas_stations.id', 'c.gas_station_id')
-            .orderBy(Database.raw('COUNT(c.*)'), 'desc')
+            .groupBy('gas_stations.id')
+            .orderBy('media', 'asc')
           break
         case 'mostComplained':
           gasStations
-            .leftJoin('complaints as c', 'gas_stations.id', 'c.gas_stations_id')
-            .orderBy(Database.raw('COUNT(c.*)'), 'desc')
+            .select('gas_stations.*', Database.raw('COUNT(c.*) as media'))
+            .leftJoin('complaints as c', 'gas_stations.id', 'c.gas_station_id')
+            .groupBy('gas_stations.id')
+            .orderBy('media', 'desc')
           break
       }
     }
@@ -241,7 +249,7 @@ class GasStationController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show({ auth, params }) {
+  async show({ params }) {
     return await GasStation.query()
       .where('id', params.id)
       .with('bookmarks')
