@@ -27,16 +27,8 @@ class GasStationController {
       .with('login')
       .with('ratings')
       .with('priceFuels', (builder) => {
-        builder.with('fuelType', (fuelTypeBuilder) => {
-          if (queryParams.fuelType) {
-            fuelTypeBuilder.where('name', queryParams.fuelType)
-          }
-        })
-        builder.with('paymentType', (paymentTypeBuilder) => {
-          if (queryParams.paymentType) {
-            paymentTypeBuilder.where('name', queryParams.paymentType)
-          }
-        })
+        builder.with('fuelType')
+        builder.with('paymentType')
       })
       .where(function () {
         if (queryParams.name) {
@@ -53,7 +45,9 @@ class GasStationController {
           builder.where('id', queryParams.state)
         }
       }, '=', 1)
-      .whereHas('priceFuels', (priceFuelsBuilder) => {
+
+    if (queryParams.fuelType || queryParams.paymentType || queryParams.minPrice || queryParams.maxPrice) {
+      gasStations.whereHas('priceFuels', (priceFuelsBuilder) => {
         if (queryParams.fuelType) {
           priceFuelsBuilder.whereHas('fuelType', (fuelTypeBuilder) => {
             fuelTypeBuilder.where('name', queryParams.fuelType)
@@ -71,6 +65,7 @@ class GasStationController {
           priceFuelsBuilder.where('price', '<=', queryParams.maxPrice)
         }
       })
+    }
 
     if (queryParams.orderType) {
       switch (queryParams.orderType) {
