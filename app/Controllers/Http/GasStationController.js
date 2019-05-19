@@ -146,7 +146,10 @@ class GasStationController {
       .with('state')
       .with('login')
       .with('ratings')
-      .with('priceFuels')
+      .with('priceFuels', (builder) => {
+        builder.with('fuelType')
+        builder.with('paymentType')
+      })
       .whereHas('bookmarks', (builder) => {
         builder.where('user_id', auth.user.id)
       })
@@ -170,7 +173,10 @@ class GasStationController {
       .with('state')
       .with('login')
       .with('ratings')
-      .with('priceFuels')
+      .with('priceFuels', (builder) => {
+        builder.with('fuelType')
+        builder.with('paymentType')
+      })
       .whereHas('complaints', (builder) => {
         builder.where('user_id', auth.user.id)
       })
@@ -194,7 +200,10 @@ class GasStationController {
       .with('state')
       .with('login')
       .with('ratings')
-      .with('priceFuels')
+      .with('priceFuels', (builder) => {
+        builder.with('fuelType')
+        builder.with('paymentType')
+      })
       .whereHas('ratings', (builder) => {
         builder.where('user_id', auth.user.id)
       })
