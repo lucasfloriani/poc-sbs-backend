@@ -7,20 +7,22 @@ const addPrefixToGroup = (group, prefix) => {
 }
 
 const Route = use('Route')
-// Public login routes
-Route.post('users', 'UserController.store').validator('StoreUser')
-Route.post('authenticate', 'AuthController.authenticate').validator('Auth')
-// Public state routes
-Route.get('states', 'StateController.index')
-Route.get('states/:stateID/cities', 'CityController.index')
-// Public fuelTypes routes
-Route.get('fuel-types', 'FuelTypeController.index')
-Route.get('fuel-types/:id', 'FuelTypeController.show')
-// Public paymentTypes routes
-Route.get('payment-types', 'PaymentTypeController.index')
-Route.get('payment-types/:id', 'PaymentTypeController.show')
-// Public gasStation routes
-Route.get('gas-stations', 'GasStationController.index')
+Route.group(() => {
+  // Public login routes
+  Route.post('users', 'UserController.store').validator('StoreUser')
+  Route.post('authenticate', 'AuthController.authenticate').validator('Auth')
+  // Public state routes
+  Route.get('states', 'StateController.index')
+  Route.get('states/:stateID/cities', 'CityController.index')
+  // Public fuelTypes routes
+  Route.get('fuel-types', 'FuelTypeController.index')
+  Route.get('fuel-types/:id', 'FuelTypeController.show')
+  // Public paymentTypes routes
+  Route.get('payment-types', 'PaymentTypeController.index')
+  Route.get('payment-types/:id', 'PaymentTypeController.show')
+  // Public gasStation routes
+  Route.get('gas-stations', 'GasStationController.index')
+}).middleware(['jsonResponse'])
 
 // Private common routes
 addPrefixToGroup(
@@ -28,7 +30,7 @@ addPrefixToGroup(
     Route.get(':id', 'GasStationController.show')
     // Private complaints routes
     Route.get(':id/complaints', 'ComplaintController.gasStationIndex')
-  }).middleware(['auth']),
+  }).middleware(['auth', 'jsonResponse']),
   'gas-stations'
 )
 
@@ -36,11 +38,12 @@ addPrefixToGroup(
 addPrefixToGroup(
   Route.group(() => {
     // Private admin complaints routes
-    Route.get('complaints', 'ComplaintController.index')
+    Route.get('complaints', 'ComplaintController.index').middleware(['jsonResponse'])
+    Route.get('complaints/relatory', 'ComplaintController.relatory')
 
     // Private admin gasStation routes
-    Route.post('gas-stations', 'GasStationController.store').validator('StoreGasStation')
-    Route.put('gas-stations/:id', 'GasStationController.update').validator('UpdateGasStation')
+    Route.post('gas-stations', 'GasStationController.store').validator('StoreGasStation').middleware(['jsonResponse'])
+    Route.put('gas-stations/:id', 'GasStationController.update').validator('UpdateGasStation').middleware(['jsonResponse'])
   }).middleware(['auth', 'onlyAdmin']),
   'admin'
 )
@@ -71,7 +74,7 @@ addPrefixToGroup(
     Route.post('ratings', 'RatingController.store').validator('StoreRating')
     Route.put('ratings/:id', 'RatingController.update').validator('UpdateRating')
     Route.delete('ratings/:id', 'RatingController.destroy')
-  }).middleware(['auth', 'onlyUser']),
+  }).middleware(['auth', 'onlyUser', 'jsonResponse']),
   'users'
 )
 
@@ -83,6 +86,6 @@ addPrefixToGroup(
     Route.post('price-fuel', 'PriceFuelController.store').validator('StorePriceFuel')
     Route.put('price-fuel/:id', 'PriceFuelController.update').validator('UpdatePriceFuel')
     Route.delete('price-fuel/:id', 'PriceFuelController.destroy')
-  }).middleware(['auth', 'onlyGasStation']),
+  }).middleware(['auth', 'onlyGasStation', 'jsonResponse']),
   'gas-stations'
 )

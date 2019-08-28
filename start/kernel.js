@@ -14,7 +14,6 @@ const Server = use('Server')
 */
 const globalMiddleware = [
   'Adonis/Middleware/BodyParser',
-  'App/Middleware/OnlyJsonResponse'
 ]
 
 /*
@@ -39,7 +38,8 @@ const namedMiddleware = {
   guest: 'Adonis/Middleware/AllowGuestOnly',
   onlyGasStation: 'App/Middleware/OnlyGasStation',
   onlyUser: 'App/Middleware/OnlyUser',
-  onlyAdmin: 'App/Middleware/OnlyAdmin'
+  onlyAdmin: 'App/Middleware/OnlyAdmin',
+  jsonResponse: 'App/Middleware/OnlyJsonResponse',
 }
 
 /*
