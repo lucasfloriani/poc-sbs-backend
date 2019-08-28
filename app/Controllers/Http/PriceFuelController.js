@@ -3,6 +3,7 @@
 const Database = use('Database')
 const PriceFuel = use('App/Models/PriceFuel')
 const PriceFuelHistory = use('App/Models/PriceFuelHistory')
+const SpreadSheet = use('SpreadSheet')
 
 /**
  * Resourceful controller for interacting with pricefuels
@@ -125,6 +126,53 @@ class PriceFuelController {
     }, trx)
     await priceFuel.delete(trx)
     trx.commit()
+  }
+
+  /**
+   * Create a csv with all price fuel histories in database.
+   * GET pricefuels/relatory
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async relatory({ request, response }) {
+    const ss = new SpreadSheet(response, 'xls')
+
+    const priceFuelHistories = await PriceFuelHistory
+      .query()
+      .with('fuelType')
+      .with('gasStation')
+      .with('paymentType')
+      .fetch()
+    const data = []
+
+    data.push([
+      'Razão social',
+      'Nome fantasia',
+      'CNPJ',
+      'Tipo de combustível',
+      'Tipo de pagamento',
+      'Preço',
+      'Ação',
+      'Criado em',
+    ])
+
+    priceFuelHistories.toJSON().forEach((priceFuelHistory) => {
+      data.push([
+        priceFuelHistory.gasStation.business_name,
+        priceFuelHistory.gasStation.fantasy_name,
+        priceFuelHistory.gasStation.cnpj,
+        priceFuelHistory.fuelType.name,
+        priceFuelHistory.paymentType.name,
+        priceFuelHistory.price,
+        priceFuelHistory.type,
+        priceFuelHistory.created_at,
+      ])
+    })
+
+    ss.addSheet('Histórico de preço', data)
+    ss.download('historico-de-preco')
   }
 }
 

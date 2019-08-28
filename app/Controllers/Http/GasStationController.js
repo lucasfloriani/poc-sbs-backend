@@ -3,6 +3,7 @@
 const Database = use('Database')
 const GasStation = use('App/Models/GasStation')
 const Login = use('App/Models/Login')
+const SpreadSheet = use('SpreadSheet')
 
 /**
  * Resourceful controller for interacting with gasstations
@@ -318,6 +319,62 @@ class GasStationController {
     await gasStation.delete(trx)
     await login.delete(trx)
     trx.commit()
+  }
+
+  /**
+   * Create a csv with all gas stations in database.
+   * GET gasstations/relatory
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async relatory({ request, response }) {
+    const ss = new SpreadSheet(response, 'xls')
+
+    const gasStations = await GasStation
+      .query()
+      .with('city')
+      .with('state')
+      .fetch()
+    const data = []
+
+    data.push([
+      'ID',
+      'Razão Social',
+      'Nome fantasia',
+      'CNPJ',
+      'Registro estadual',
+      'ANP',
+      'CEP',
+      'Estado',
+      'Cidade',
+      'Bairro',
+      'Endereço',
+      'Complemento',
+      'Geolocalização',
+    ])
+
+    gasStations.toJSON().forEach((gasStation) => {
+      data.push([
+        gasStation.id,
+        gasStation.business_name,
+        gasStation.fantasy_name,
+        gasStation.cnpj,
+        gasStation.state_registration,
+        gasStation.anp,
+        gasStation.cep,
+        gasStation.state.name,
+        gasStation.city.name,
+        gasStation.neighborhood,
+        gasStation.address,
+        gasStation.complement,
+        gasStation.geo_location,
+      ])
+    })
+
+    ss.addSheet('Postos de combustível', data)
+    ss.download('postos-de-combustivel')
   }
 }
 

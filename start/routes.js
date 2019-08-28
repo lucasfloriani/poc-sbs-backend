@@ -44,6 +44,10 @@ addPrefixToGroup(
     // Private admin gasStation routes
     Route.post('gas-stations', 'GasStationController.store').validator('StoreGasStation').middleware(['jsonResponse'])
     Route.put('gas-stations/:id', 'GasStationController.update').validator('UpdateGasStation').middleware(['jsonResponse'])
+    Route.get('gas-stations/relatory', 'GasStationController.relatory')
+
+    // Private admin price fuel history
+    Route.get('price-fuel-history/relatory', 'PriceFuelController.relatory')
   }).middleware(['auth', 'onlyAdmin']),
   'admin'
 )
