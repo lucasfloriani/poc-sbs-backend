@@ -18,6 +18,8 @@ const providers = [
   '@adonisjs/cors/providers/CorsProvider',
   '@adonisjs/lucid/providers/LucidProvider',
   'adonis-spreadsheet/providers/SpreadSheetProvider',
+  '@adonisjs/framework/providers/ViewProvider',
+  '@adonisjs/mail/providers/MailProvider',
 ]
 
 /*
