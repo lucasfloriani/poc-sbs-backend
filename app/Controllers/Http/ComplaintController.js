@@ -1,6 +1,7 @@
 'use strict'
 
 const Complaint = use('App/Models/Complaint')
+const Drive = use('Drive')
 const SpreadSheet = use('SpreadSheet')
 
 /**
@@ -35,7 +36,7 @@ class ComplaintController {
    */
   async gasStationindex({ params }) {
     const gasStationcomplaints = await Complaint.query()
-      .select('message')
+      .select('message', 'image')
       .where('gas_station_id', params.id)
       .fetch()
     return gasStationcomplaints
@@ -64,8 +65,25 @@ class ComplaintController {
    * @param {Response} ctx.response
    */
   async store({ auth, request }) {
-    const data = request.only(['gas_station_id', 'message'])
-    const complaint = await Complaint.create({ ...data, user_id: auth.user.id })
+    let image = ''
+    request.multipart.file('image', {}, async (file) => {
+      const imageName = `${new Date().getTime()}.${file.extname}`
+      await Drive.put(imageName, file.stream)
+      image = `/public/storage/${imageName}`
+    })
+
+    const body = {}
+    request.multipart.field((name, value) => body[name] = value)
+
+    await request.multipart.process()
+
+    const { gas_station_id, message } = body
+    const complaint = await Complaint.create({
+      gas_station_id,
+      message,
+      image,
+      user_id: auth.user.id
+    })
     return complaint
   }
 
@@ -86,6 +104,7 @@ class ComplaintController {
     data.push([
       'ID',
       'Mensagem da denúncia',
+      'Imagem',
       'Nome fantasia do posto',
       'Razão social do posto',
       'CNPJ',
@@ -97,6 +116,7 @@ class ComplaintController {
       data.push([
         complaint.id,
         complaint.message,
+        complaint.image,
         complaint.gasStation.fantasy_name,
         complaint.gasStation.business_name,
         complaint.gasStation.cnpj,
