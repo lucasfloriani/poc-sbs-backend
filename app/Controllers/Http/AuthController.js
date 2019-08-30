@@ -5,6 +5,10 @@ const Admin = use('App/Models/Admin')
 const User = use('App/Models/User')
 const GasStation = use('App/Models/GasStation')
 
+const Mail = use('Mail')
+const moment = require('moment')
+const crypto = require('crypto')
+
 /**
  * Resourceful controller for interacting with auth
  */
@@ -37,6 +41,45 @@ class AuthController {
       .first()
     gasStation.email = login.email
     return { token, user: gasStation }
+  }
+
+  async forgotPassword({ request }) {
+    try {
+      const { email } = request.only(['email'])
+      const login = await Login.findByOrFail('email', email)
+
+      const token = await crypto.randomBytes(10).toString('hex')
+
+      login.token = token
+      login.token_created_at = new Date()
+      await login.save()
+
+      await Mail.send('emails.recover', { login, token }, (message) => {
+        message.from('contato@octano.com.br').to(login.email)
+      })
+
+      return login.token
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  async updatePassword({ request, response }) {
+    try {
+      const { token, password } = request.only(['token', 'password'])
+      const login = await Login.findByOrFail('token', token)
+
+      const tokenExpired = moment().subtract(2, 'hours').isAfter(login.token_created_at)
+      if (tokenExpired) {
+        return response.status(401).send({ message: { error: 'Token expirado' } })
+      }
+
+      login.password = password
+      login.token = null
+      await login.save()
+    } catch (e) {
+      console.error(e)
+    }
   }
 }
 

@@ -23,6 +23,9 @@ Route.group(() => {
   Route.get('payment-types/:id', 'PaymentTypeController.show')
   // Public gasStation routes
   Route.get('gas-stations', 'GasStationController.index')
+  // Password recovery routes
+  Route.post('forgot-password', 'AuthController.forgotPassword')
+  Route.put('password-recovery', 'AuthController.updatePassword')
 }).middleware(['jsonResponse'])
 
 // Private common routes
