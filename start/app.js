@@ -20,6 +20,7 @@ const providers = [
   'adonis-spreadsheet/providers/SpreadSheetProvider',
   '@adonisjs/framework/providers/ViewProvider',
   '@adonisjs/mail/providers/MailProvider',
+  '@adonisjs/drive/providers/DriveProvider',
 ]
 
 /*
