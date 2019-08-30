@@ -10,6 +10,7 @@ const Route = use('Route')
 Route.group(() => {
   // Public login routes
   Route.post('users', 'UserController.store').validator('StoreUser')
+  Route.post('gas-stations', 'GasStationController.publicStore').validator('PublicStoreGasStation').middleware(['jsonResponse'])
   Route.post('authenticate', 'AuthController.authenticate').validator('Auth')
   // Public state routes
   Route.get('states', 'StateController.index')
@@ -42,6 +43,7 @@ addPrefixToGroup(
     Route.get('complaints/relatory', 'ComplaintController.relatory')
 
     // Private admin gasStation routes
+    Route.get('gas-stations', 'GasStationController.index').middleware(['jsonResponse'])
     Route.post('gas-stations', 'GasStationController.store').validator('StoreGasStation').middleware(['jsonResponse'])
     Route.put('gas-stations/:id', 'GasStationController.update').validator('UpdateGasStation').middleware(['jsonResponse'])
     Route.get('gas-stations/relatory', 'GasStationController.relatory')

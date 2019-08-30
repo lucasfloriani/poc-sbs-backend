@@ -12,7 +12,11 @@ class OnlyGasStation {
     const login = await auth.getUser()
     if (login.profile === 'gas-station') {
       auth.login = login
-      auth.gasStation = await GasStation.findByOrFail('login_id', login.id)
+      auth.gasStation = await GasStation
+        .query()
+        .where('status', 'active')
+        .where('login_id', login.id)
+        .first()
       await next()
     } else {
       return response.status(401)

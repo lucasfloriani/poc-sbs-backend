@@ -2,7 +2,7 @@
 
 const { formatters } = use('Validator')
 
-class StoreGasStation {
+class PublicStoreGasStation {
   get rules() {
     return {
       email: 'required|string|email|unique:logins,email',
@@ -23,8 +23,7 @@ class StoreGasStation {
         'regex:^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$',
       ],
       city_id: 'required|integer',
-      state_id: 'required|integer',
-      status: 'required|string',
+      state_id: 'required|integer'
     }
   }
 
@@ -64,9 +63,7 @@ class StoreGasStation {
       'city_id.required': 'Cidade é obrigatória.',
       'city_id.integer': 'Cidade inválida.',
       'state_id.required': 'Estado é obrigatório.',
-      'state_id.integer': 'Estado inválido.',
-      'status.required': 'Status é obrigatório.',
-      'status.string': 'Status precisa ser um texto.',
+      'state_id.integer': 'Estado inválido.'
     }
   }
 
@@ -75,4 +72,4 @@ class StoreGasStation {
   }
 }
 
-module.exports = StoreGasStation
+module.exports = PublicStoreGasStation

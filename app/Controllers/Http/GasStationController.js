@@ -18,7 +18,7 @@ class GasStationController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ request }) {
+  async index({ auth, request }) {
     const queryParams = request.get()
     const gasStations = GasStation.query()
       .with('bookmarks')
@@ -34,6 +34,9 @@ class GasStationController {
       .where(function () {
         if (queryParams.name) {
           this.where('fantasy_name', 'LIKE', `%${queryParams.name}%`)
+        }
+        if (!auth.admin) {
+          this.where('status', 'active')
         }
       })
       .whereHas('city', (builder) => {
@@ -235,9 +238,51 @@ class GasStationController {
         'neighborhood',
         'geo_location',
         'city_id',
-        'state_id'
+        'state_id',
+        'status',
       ]),
       login_id: login.id
+    }
+    const gasStation = await GasStation.create(gasStationData, trx)
+    trx.commit()
+
+    return gasStation
+  }
+
+
+  /**
+   * Create/save a new gasstation.
+   * POST gasstations
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async publicStore({ request }) {
+    const trx = await Database.beginTransaction()
+    const loginData = {
+      ...request.only(['email', 'password']),
+      profile: 'gas-station'
+    }
+    const login = await Login.create(loginData, trx)
+
+    const gasStationData = {
+      ...request.only([
+        'cnpj',
+        'business_name',
+        'fantasy_name',
+        'state_registration',
+        'anp',
+        'cep',
+        'address',
+        'complement',
+        'neighborhood',
+        'geo_location',
+        'city_id',
+        'state_id'
+      ]),
+      login_id: login.id,
+      status: 'inactive',
     }
     const gasStation = await GasStation.create(gasStationData, trx)
     trx.commit()
@@ -294,7 +339,8 @@ class GasStationController {
         'neighborhood',
         'geo_location',
         'city_id',
-        'state_id'
+        'state_id',
+        'status',
       ])
     )
     await gasStation.save()

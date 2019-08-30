@@ -30,7 +30,11 @@ class AuthController {
       return { token, user: admin }
     }
 
-    const gasStation = await GasStation.findBy('login_id', login.id)
+    const gasStation = await GasStation
+      .query()
+      .where('status', 'active')
+      .where('login_id', login.id)
+      .first()
     gasStation.email = login.email
     return { token, user: gasStation }
   }
