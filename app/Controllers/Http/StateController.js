@@ -16,7 +16,10 @@ class StateController {
    * @param {View} ctx.view
    */
   async index() {
-    const states = await State.all()
+    const states = await State
+      .query()
+      .orderBy('name', 'asc')
+      .fetch()
     return states
   }
 }
