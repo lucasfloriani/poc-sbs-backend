@@ -69,7 +69,7 @@ class ComplaintController {
     request.multipart.file('image', {}, async (file) => {
       const imageName = `${new Date().getTime()}.${file.extname}`
       await Drive.put(imageName, file.stream)
-      image = `/public/storage/${imageName}`
+      image = `/storage/${imageName}`
     })
 
     const body = {}
