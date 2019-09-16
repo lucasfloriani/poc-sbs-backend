@@ -5,8 +5,8 @@ const FuelType = use('App/Models/FuelType')
 class FuelTypeSeeder {
   async run() {
     const fuelTypes = [
-      { name: 'Gasolina' },
-      { name: 'Gasolina Premium' },
+      { name: 'Gasolina Comum' },
+      { name: 'Gasolina Aditivada' },
       { name: 'Etanol' },
       { name: 'Diesel S10' },
       { name: 'Diesel S500' }
