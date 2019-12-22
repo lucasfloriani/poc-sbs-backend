@@ -165,7 +165,7 @@ class PriceFuelController {
         priceFuelHistory.gasStation.cnpj,
         priceFuelHistory.fuelType.name,
         priceFuelHistory.paymentType.name,
-        priceFuelHistory.price,
+        Number(priceFuelHistory.price),
         priceFuelHistory.type,
         priceFuelHistory.created_at,
       ])
