@@ -6,7 +6,7 @@ class StoreUser {
   get rules() {
     return {
       cpf:
-        'required|string|regex:^([0-9]{3}.){2}[0-9]{3}-[0-9]{2}$|unique:users,cpf',
+        'required|string|regex:^([0-9]{3}.){2}[0-9]{3}-[0-9]{2}$|cpf|unique:users,cpf',
       email: 'required|string|email|unique:logins,email',
       name: 'required|string',
       password: 'required|string|min:6'
@@ -18,6 +18,7 @@ class StoreUser {
       'cpf.required': 'CPF é obrigatório.',
       'cpf.string': 'CPF precisa ser um texto.',
       'cpf.regex': 'CPF em formato inválido.',
+      'cpf.cpf': 'CPF é inválido.',
       'cpf.unique': 'CPF já cadastrado.',
       'email.required': 'E-mail é obrigatório.',
       'email.string': 'E-mail precisa ser um texto.',

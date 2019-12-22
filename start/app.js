@@ -21,6 +21,7 @@ const providers = [
   '@adonisjs/framework/providers/ViewProvider',
   '@adonisjs/mail/providers/MailProvider',
   '@adonisjs/drive/providers/DriveProvider',
+  '@conceptho/adonis-validators',
 ]
 
 /*

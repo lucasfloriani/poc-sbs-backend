@@ -8,7 +8,7 @@ class StoreGasStation {
       email: 'required|string|email|unique:logins,email',
       password: 'required|string|min:6',
       cnpj:
-        'required|string|regex:^[0-9]{2}.?[0-9]{3}.?[0-9]{3}/?[0-9]{4}-?[0-9]{2}$|unique:gas_stations,cnpj',
+        'required|string|regex:^[0-9]{2}.?[0-9]{3}.?[0-9]{3}/?[0-9]{4}-?[0-9]{2}$|cnpj|unique:gas_stations,cnpj',
       business_name: 'required|string',
       fantasy_name: 'required|string',
       state_registration: 'required|string',
@@ -40,6 +40,7 @@ class StoreGasStation {
       'cnpj.required': 'CNPJ é obrigatório.',
       'cnpj.string': 'CNPJ precisa ser um texto.',
       'cnpj.regex': 'CNPJ em formato inválido.',
+      'cnpj.cnpj': 'CNPJ é inválido.',
       'cnpj.unique': 'CNPJ já cadastrado.',
       'business_name.required': 'Nome da empresa é obrigatório.',
       'business_name.string': 'Nome da empresa precisa ser um texto.',

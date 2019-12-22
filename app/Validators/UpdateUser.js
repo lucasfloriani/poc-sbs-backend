@@ -8,7 +8,7 @@ class UpdateUser {
 
     return {
       cpf:
-        `required|string|regex:^([0-9]{3}.){2}[0-9]{3}-[0-9]{2}$|unique:users,cpf,id,${userID}`,
+        `required|string|regex:^([0-9]{3}.){2}[0-9]{3}-[0-9]{2}$|cpf|unique:users,cpf,id,${userID}`,
       name: 'required|string'
     }
   }
@@ -18,6 +18,7 @@ class UpdateUser {
       'cpf.required': 'CPF é obrigatório.',
       'cpf.string': 'CPF precisa ser um texto.',
       'cpf.regex': 'CPF em formato inválido.',
+      'cpf.cpf': 'CPF é inválido.',
       'cpf.unique': 'CPF de usuário já cadastrado.',
       'name.required': 'Nome é obrigatório.',
       'name.string': 'Nome precisa ser um texto.'
