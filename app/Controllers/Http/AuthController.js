@@ -66,9 +66,11 @@ class AuthController {
       login.token_created_at = new Date()
       await login.save()
 
-      await Mail.send('emails.recover', { login, token }, (message) => {
-        message.from('contato@octano.com.br').to(login.email)
-      })
+      await Mail.send(
+        'emails.recover',
+        { login, recoverURL: `${Env.get('SITE_URL')}/recovery-password/${token}` },
+        message => message.subject('Octano - Recuperação de senha').from(Env.get('SENDER_EMAIL')).to(login.email)
+      )
 
       return login.token
     } catch (e) {

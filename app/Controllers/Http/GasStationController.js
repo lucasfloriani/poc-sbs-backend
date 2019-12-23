@@ -5,6 +5,9 @@ const GasStation = use('App/Models/GasStation')
 const Login = use('App/Models/Login')
 const SpreadSheet = use('SpreadSheet')
 
+const Mail = use('Mail')
+const Env = use('Env')
+
 /**
  * Resourceful controller for interacting with gasstations
  */
@@ -287,6 +290,15 @@ class GasStationController {
     const gasStation = await GasStation.create(gasStationData, trx)
     trx.commit()
 
+    await Mail.send(
+      'emails.gasStationInactive',
+      { businessName: gasStation.business_name },
+      message => message
+        .subject('Octano - Conta nova a ser verificada')
+        .from(Env.get('SENDER_EMAIL'))
+        .to(Env.get('SENDER_EMAIL'))
+    )
+
     return gasStation
   }
 
@@ -326,6 +338,7 @@ class GasStationController {
    */
   async update({ params, request }) {
     const gasStation = await GasStation.findOrFail(params.id)
+    const oldStatus = gasStation.status
     gasStation.merge(
       request.only([
         'cnpj',
@@ -343,7 +356,18 @@ class GasStationController {
         'status',
       ])
     )
+
     await gasStation.save()
+
+    if (oldStatus === 'inactive' && gasStation.status === 'active') {
+      const login = await Login.findOrFail(gasStation.login_id)
+      await Mail.send(
+        'emails.gasStationActive',
+        { businessName: gasStation.business_name, loginUrl: `${Env.get('SITE_URL')}/login` },
+        message => message.subject('Octano - Ativação da conta').from(Env.get('SENDER_EMAIL')).to(login.email)
+      )
+    }
+
     return gasStation
   }
 
