@@ -17,30 +17,42 @@ class AuthController {
    * Auth by email and password to generate JWT key.
    * POST authenticate
    */
-  async authenticate({ auth, request }) {
-    const { email, password } = request.all()
-    const token = await auth.attempt(email, password)
-    const login = await Login.findBy('email', email)
+  async authenticate({ auth, request, response }) {
+    try {
+      const { email, password } = request.all()
+      const token = await auth.attempt(email, password)
+      const login = await Login.findBy('email', email)
 
-    if (login.profile === 'user') {
-      const user =  await User.findBy('login_id', login.id)
-      user.email = login.email
-      return { token, user }
+      if (login.profile === 'user') {
+        const user =  await User.findBy('login_id', login.id)
+        user.email = login.email
+        return { token, user }
+      }
+
+      if (login.profile === 'admin') {
+        const admin =  await Admin.findBy('login_id', login.id)
+        admin.email = login.email
+        return { token, user: admin }
+      }
+
+      const gasStation = await GasStation
+        .query()
+        .where('login_id', login.id)
+        .first()
+
+      if (gasStation.status === 'inactive') {
+        return response.status(401).send({
+          errors: [{ detail: 'Conta do posto de combustivel não está ativa' }]
+        })
+      }
+
+      gasStation.email = login.email
+      return { token, user: gasStation }
+    } catch (e) {
+      return response.status(401).send({
+        errors: [{ detail: 'Usuário não foi encontrado' }]
+      })
     }
-
-    if (login.profile === 'admin') {
-      const admin =  await Admin.findBy('login_id', login.id)
-      admin.email = login.email
-      return { token, user: admin }
-    }
-
-    const gasStation = await GasStation
-      .query()
-      .where('status', 'active')
-      .where('login_id', login.id)
-      .first()
-    gasStation.email = login.email
-    return { token, user: gasStation }
   }
 
   async forgotPassword({ request }) {
