@@ -167,7 +167,7 @@ class PriceFuelController {
         priceFuelHistory.paymentType.name,
         Number(priceFuelHistory.price),
         priceFuelHistory.type,
-        priceFuelHistory.created_at,
+        new Date(`${priceFuelHistory.created_at}+0`).toLocaleString('pt-BR'),
       ])
     })
 
