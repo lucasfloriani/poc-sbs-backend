@@ -10,7 +10,7 @@ const Route = use('Route')
 Route.group(() => {
   // Public login routes
   Route.post('users', 'UserController.store').validator('StoreUser')
-  Route.post('gas-stations', 'GasStationController.publicStore').validator('PublicStoreGasStation').middleware(['jsonResponse'])
+  Route.post('gas-stations', 'GasStationController.publicStore').validator('PublicStoreGasStation')
   Route.post('authenticate', 'AuthController.authenticate').validator('Auth')
   // Public state routes
   Route.get('states', 'StateController.index')
